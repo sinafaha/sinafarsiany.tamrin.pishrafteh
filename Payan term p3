@@ -1,0 +1,27 @@
+import json
+import pandas as pd
+
+def read_customer_data(json_file):
+    with open(json_file, 'r', encoding='utf-8') as file:
+        data = json.load(file)
+    return data
+
+def save_customer_numbers_to_excel(data, output_file):
+    customer_numbers = [customer['customer_number'] for customer in data]
+    df = pd.DataFrame(customer_numbers, columns=['Customer Number'])
+    df.to_excel(output_file, index=False)
+    print(f"Customer numbers saved to {output_file}")
+
+customer_data = [
+    {"name": "Ali", "customer_number": "1001", "phone": "09123456789", "address": "Tehran"},
+    {"name": "Sara", "customer_number": "1002", "phone": "09198765432", "address": "Shiraz"},
+    {"name": "Mohammad", "customer_number": "1003", "phone": "09211234567", "address": "Isfahan"},
+    {"name": "Zahra", "customer_number": "1004", "phone": "09345678901", "address": "Tabriz"}
+]
+
+with open('customers_data.json', 'w', encoding='utf-8') as json_file:
+    json.dump(customer_data, json_file, ensure_ascii=False, indent=4)
+
+data = read_customer_data('customers_data.json')
+
+save_customer_numbers_to_excel(data, 'customer_numbers.xlsx')
