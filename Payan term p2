@@ -1,0 +1,36 @@
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+import re
+
+SERVICE_ACCOUNT_FILE = 'your_credentials.json'
+SCOPES = ['https://www.googleapis.com/auth/documents.readonly']
+DOCUMENT_ID = 'your_document_id'
+
+credentials = service_account.Credentials.from_service_account_file(
+    SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+service = build('docs', 'v1', credentials=credentials)
+
+def read_document(document_id):
+    document = service.documents().get(documentId=document_id).execute()
+    return document
+
+def search_by_national_code(national_code):
+    document = read_document(DOCUMENT_ID)
+    content = document.get('body').get('content')
+
+    for element in content:
+        if 'paragraph' in element:
+            for text_run in element['paragraph']['elements']:
+                text = text_run['textRun']['content']
+                
+                if national_code in text:
+                    print(f"Found: {text.strip()}")
+                    break
+            else:
+                continue
+            break
+    else:
+        print("User with this national code not found.")
+
+national_code = input("Please enter your national code: ")
+search_by_national_code(national_code)
