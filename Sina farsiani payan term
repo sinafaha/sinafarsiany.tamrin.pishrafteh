@@ -1,0 +1,47 @@
+import requests
+import json
+
+API_KEY = 'your_api_key'
+BASE_URL = "http://api.openweathermap.org/data/2.5/weather?"
+
+def get_weather(city_name):
+    url = BASE_URL + "q=" + city_name + "&appid=" + API_KEY + "&units=metric"
+    response = requests.get(url)
+    data = response.json()
+    
+    if data["cod"] == "404":
+        print("City not found! Please enter the city name again.")
+    else:
+        main_data = data.get("main", {})
+        weather_data = data.get("weather", [{}])[0]
+        wind_data = data.get("wind", {})
+        sys_data = data.get("sys", {})
+
+        print(f"\nWeather information for {city_name}:")
+        print(f"Current temperature: {main_data.get('temp', 'N/A')} °C")
+        print(f"Maximum temperature: {main_data.get('temp_max', 'N/A')} °C")
+        print(f"Minimum temperature: {main_data.get('temp_min', 'N/A')} °C")
+        print(f"Pressure: {main_data.get('pressure', 'N/A')} hPa")
+        print(f"Humidity: {main_data.get('humidity', 'N/A')}%")
+        print(f"Weather status: {weather_data.get('description', 'N/A')}")
+        
+        print(f"Wind speed: {wind_data.get('speed', 'N/A')} m/s")
+
+        sunrise_time = sys_data.get("sunrise", 0)
+        sunset_time = sys_data.get("sunset", 0)
+
+        import time
+        sunrise = time.strftime('%H:%M:%S', time.gmtime(sunrise_time - 3600))
+        sunset = time.strftime('%H:%M:%S', time.gmtime(sunset_time - 3600))
+
+        print(f"Sunrise time: {sunrise}")
+        print(f"Sunset time: {sunset}")
+
+while True:
+    city_name = input("Enter city name: ").strip()
+    
+    if city_name == "":
+        print("Please enter a city name.")
+    else:
+        get_weather(city_name)
+        break
